@@ -7,6 +7,9 @@ const listUserconnect =[];
 
 app.use(express.static(__dirname + '/public/'));
 
+//settings
+app.set('port',process.env.PORT || 5000);
+
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
@@ -72,7 +75,7 @@ io.on('connection', (socket) => {
 
 })
 
-server.listen(5000, () => {
+server.listen(app.get('port'),() => {
   console.log('listo y escuchando: puerto 5000');
 })
 

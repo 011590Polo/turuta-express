@@ -4,7 +4,10 @@
   "description": "socketweb",
   "main": "index.js",
   "scripts": {
-    "test": "backend socket"
+    "test": "backend socket",
+    "start":"node  server.js",
+    "dev":"nodemon server.js"
+
   },
   "author": "roberto acosta",
   "license": "ISC",
