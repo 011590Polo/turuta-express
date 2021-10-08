@@ -18,53 +18,43 @@ io.on('connection', (socket) => {
   const user = {
     usuario: '',
     token: '',
-    sala:'',
-    bus:''
+    sala:'',    
+    ruta:'',
+    placa:''
   }
 
   const idHandShake = socket.id;
 
-  const { nameRoom } = socket.handshake.query;
-
   const { usuarioRoom } = socket.handshake.query;
 
+  const { nameRoom } = socket.handshake.query; 
+  
+  const { nameRuta } = socket.handshake.query; 
+
   const { busRoom } = socket.handshake.query;
-
-
   
 
   //guardar usuarios entrantes
-  user.usuario = usuarioRoom;
   user.token =   idHandShake;
-  user.sala  =   nameRoom;
-  user.bus   =   busRoom;
 
- 
-  //agregar y actualizar lista
-  let entro=true;;
-  if (listUserconnect.length===0) {
-     listUserconnect.push(user);      
-   }else{
-     for (let index = 0; index < listUserconnect.length; index++) {
-       if (listUserconnect[index].usuario === usuarioRoom) {
-           listUserconnect[index].token=idHandShake;
-           entro=false;
-       }   
-     }
-     if (entro) {
-      listUserconnect.push(user);  
-     }
-   }  
+  user.usuario = usuarioRoom;  
+  user.sala  =   nameRoom;
+  user.ruta  =   nameRuta;
+  user.placa  =   busRoom; 
+  
 
   //enlazar conexiones a la sala
-  socket.join(nameRoom);
+  // if (usuarioRoom != '' && usuarioRoom != null) {
+    socket.join(nameRoom);
+  // }
+  
 
   console.log('--');
   for (let index = 0; index < listUserconnect.length; index++) {
-    console.log(`usuario: ${listUserconnect[index].usuario} ->> token-dispositivo: ${listUserconnect[index].token} sala: ${listUserconnect[index].sala}`);
+    console.log(`usuario: ${listUserconnect[index].usuario} ->> token-dispositivo: ${listUserconnect[index].token} sala: ${listUserconnect[index].sala} ruta: ${listUserconnect[index].ruta} placa: ${listUserconnect[index].placa } `);
   }
 
-  //console.log(`Hola dispositivo: ${idHandShake}  se unio sala ${nameRoom} usuario ${usuarioRoom}`);
+  console.log(`Hola dispositivo: ${idHandShake}  se unio sala ${nameRoom} usuario ${usuarioRoom}`);
 
   //server escucha al front 
   socket.on('event', (res) => {
@@ -73,15 +63,43 @@ io.on('connection', (socket) => {
     socket.to(nameRoom).emit('event', res);
   });
 
+
+
+   //server escucha al front 
+  socket.on('eventActivos', (res) => {
+    //agregar y actualizar lista
+  let entro=true;    
+  if (listUserconnect.length ===0 && res.usuario != '' && res.usuario != null) {
+     listUserconnect.push(user);      
+   }else{
+     if (res.usuario != '' && res.usuario != null){
+      for (let index = 0; index < listUserconnect.length; index++) {
+        if (listUserconnect[index].usuario === res.usuario) {
+            //listUserconnect[index].token=idHandShake;
+            entro=false;
+        }   
+      }
+      if (entro) {
+       listUserconnect.push(user);  
+      }
+     }   
+   }  
+    console.log(res);
+    //server envia al front   cuando conecta alguno
+    socket.to(nameRoom).emit('eventActivos', res); 
+  });
+
+  
+
+  //escuchar al front me pide el listado de activos
+  // socket.on('eventActivosTraermelista', (res) => {
+  //   console.log(res);
+  //   //SERVER ENVIA AL FRONT
+  //   socket.emit(nameRoom).emit('eventActivosTraermelista', res);
+  // });
+
 })
 
 server.listen(app.get('port'),() => {
   console.log('listo y escuchando: puerto 5000');
 })
-
-
-
-
-  
-
-
