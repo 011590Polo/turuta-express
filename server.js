@@ -86,7 +86,7 @@ io.on('connection', (socket) => {
    }  
     console.log(res);
     //server envia al front   cuando conecta alguno
-    socket.to(nameRoom).emit('eventActivos', res); 
+    socket.to(nameRoom).emit('eventActivos', listUserconnect); 
   });
 
   
